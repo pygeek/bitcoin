@@ -265,22 +265,14 @@ if __name__ == '__main__':
 		settings[m.group(1)] = m.group(2)
 	f.close()
 
-	if 'netmagic' not in settings:
-		settings['netmagic'] = 'f9beb4d9'
-	if 'genesis' not in settings:
-		settings['genesis'] = '000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f'
-	if 'input' not in settings:
-		settings['input'] = 'input'
-	if 'hashlist' not in settings:
-		settings['hashlist'] = 'hashlist.txt'
-	if 'file_timestamp' not in settings:
-		settings['file_timestamp'] = 0
-	if 'split_timestamp' not in settings:
-		settings['split_timestamp'] = 0
-	if 'max_out_sz' not in settings:
-		settings['max_out_sz'] = 1000L * 1000 * 1000
-	if 'out_of_order_cache_sz' not in settings:
-		settings['out_of_order_cache_sz'] = 100 * 1000 * 1000
+	settings.setdefault('netmagic', 'f9beb4d9')
+	settings.setdefault('genesis', '000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f')
+	settings.setdefault('input', 'input')
+	settings.setdefault('hashlist', 'hashlist.txt')
+	settings.setdefault('file_timestamp', 0)
+	settings.setdefault('split_timestamp', 0)
+	settings.setdefault('max_out_sz', 1000L * 1000 * 1000)
+	settings.setdefault('out_of_order_cache_sz', 100 * 1000 * 1000)
 
 	settings['max_out_sz'] = long(settings['max_out_sz'])
 	settings['split_timestamp'] = int(settings['split_timestamp'])

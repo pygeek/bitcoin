@@ -27,10 +27,10 @@ def check_array_result(object_array, to_match, expected):
             continue
         for key,value in expected.items():
             if item[key] != value:
-                raise AssertionError("%s : expected %s=%s"%(str(item), str(key), str(value)))
+                raise AssertionError("{0} : expected {1}={2}".format(str(item), str(key), str(value)))
             num_matched = num_matched+1
     if num_matched == 0:
-        raise AssertionError("No objects matched %s"%(str(to_match)))
+        raise AssertionError("No objects matched {0}".format(str(to_match)))
 
 class KeyPoolTest(BitcoinTestFramework):
 

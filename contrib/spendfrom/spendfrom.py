@@ -68,7 +68,10 @@ def connect_JSON(config):
     testnet = (int(testnet) > 0)  # 0/1 in config file, convert to True/False
     if not 'rpcport' in config:
         config['rpcport'] = 18332 if testnet else 8332
-    connect = "http://%s:%s@127.0.0.1:%s"%(config['rpcuser'], config['rpcpassword'], config['rpcport'])
+
+    connect = "http://{0}:{1}@127.0.0.1:{2}".format(
+        config['rpcuser'], config['rpcpassword'], config['rpcport'])
+
     try:
         result = ServiceProxy(connect)
         # ServiceProxy is lazy-connect, so send an RPC command mostly to catch connection errors,
@@ -114,7 +117,7 @@ def list_available(bitcoind):
         # or pay-to-script-hash outputs right now; anything exotic is ignored.
         if pk["type"] != "pubkeyhash" and pk["type"] != "scripthash":
             continue
-        
+
         address = pk["addresses"][0]
         if address in address_summary:
             address_summary[address]["total"] += vout["value"]
@@ -152,7 +155,7 @@ def create_tx(bitcoind, fromaddresses, toaddress, amount, fee):
         total_available += all_coins[addr]["total"]
 
     if total_available < needed:
-        sys.stderr.write("Error, only %f BTC available, need %f\n"%(total_available, needed));
+        sys.stderr.write("Error, only {0:0f} BTC available, need {1:0f}\n".format(total_available, needed));
         sys.exit(1)
 
     #
@@ -160,7 +163,7 @@ def create_tx(bitcoind, fromaddresses, toaddress, amount, fee):
     # Python's json/jsonrpc modules have inconsistent support for Decimal numbers.
     # Instead of wrestling with getting json.dumps() (used by jsonrpc) to encode
     # Decimals, I'm casting amounts to float before sending them to bitcoind.
-    #  
+    #
     outputs = { toaddress : float(amount) }
     (inputs, change_amount) = select_coins(needed, potential_inputs)
     if change_amount > BASE_FEE:  # don't bother with zero or tiny change
@@ -247,9 +250,11 @@ def main():
         for address,info in address_summary.iteritems():
             n_transactions = len(info['outputs'])
             if n_transactions > 1:
-                print("%s %.8f %s (%d transactions)"%(address, info['total'], info['account'], n_transactions))
+                print("{0} {1:.8f} {2} ({3:d} transactions)".format(
+                    address, info['total'], info['account'], n_transactions))
             else:
-                print("%s %.8f %s"%(address, info['total'], info['account']))
+                print("{0} {1:8f} {0}".format(
+                    address, info['total'], info['account']))
     else:
         fee = Decimal(options.fee)
         amount = Decimal(options.amount)

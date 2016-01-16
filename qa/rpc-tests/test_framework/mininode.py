@@ -39,7 +39,7 @@ MAX_INV_SZ = 50000
 MAX_BLOCK_SIZE = 1000000
 
 # Keep our own socket map for asyncore, so that we can track disconnects
-# ourselves (to workaround an issue with closing an asyncore socket when 
+# ourselves (to workaround an issue with closing an asyncore socket when
 # using select)
 mininode_socket_map = dict()
 
@@ -256,8 +256,8 @@ class CAddress(object):
         return r
 
     def __repr__(self):
-        return "CAddress(nServices=%i ip=%s port=%i)" % (self.nServices,
-                                                         self.ip, self.port)
+        return "CAddress(nServices={0} ip={1} port={2})".format(
+            self.nServices, self.ip, self.port)
 
 
 class CInv(object):
@@ -281,8 +281,8 @@ class CInv(object):
         return r
 
     def __repr__(self):
-        return "CInv(type=%s hash=%064x)" \
-            % (self.typemap[self.type], self.hash)
+        return "CInv(type={0} hash={1:064x})".format(
+            self.typemap[self.type], self.hash)
 
 
 class CBlockLocator(object):
@@ -301,8 +301,8 @@ class CBlockLocator(object):
         return r
 
     def __repr__(self):
-        return "CBlockLocator(nVersion=%i vHave=%s)" \
-            % (self.nVersion, repr(self.vHave))
+        return "CBlockLocator(nVersion={0} vHave={1})".format(
+            self.nVersion, repr(self.vHave))
 
 
 class COutPoint(object):
@@ -321,7 +321,7 @@ class COutPoint(object):
         return r
 
     def __repr__(self):
-        return "COutPoint(hash=%064x n=%i)" % (self.hash, self.n)
+        return "COutPoint(hash={0:064x} n={0})".format(self.hash, self.n)
 
 
 class CTxIn(object):
@@ -347,9 +347,8 @@ class CTxIn(object):
         return r
 
     def __repr__(self):
-        return "CTxIn(prevout=%s scriptSig=%s nSequence=%i)" \
-            % (repr(self.prevout), binascii.hexlify(self.scriptSig),
-               self.nSequence)
+        return "CTxIn(prevout={0} scriptSig={1} nSequence={2})".format(
+            repr(self.prevout), binascii.hexlify(self.scriptSig), self.nSequence)
 
 
 class CTxOut(object):
@@ -368,9 +367,8 @@ class CTxOut(object):
         return r
 
     def __repr__(self):
-        return "CTxOut(nValue=%i.%08i scriptPubKey=%s)" \
-            % (self.nValue // 100000000, self.nValue % 100000000,
-               binascii.hexlify(self.scriptPubKey))
+        return "CTxOut(nValue={0}.{1:08} scriptPubKey={0})".format(
+            self.nValue // 100000000, self.nValue % 100000000, binascii.hexlify(self.scriptPubKey))
 
 
 class CTransaction(object):
@@ -423,8 +421,8 @@ class CTransaction(object):
         return True
 
     def __repr__(self):
-        return "CTransaction(nVersion=%i vin=%s vout=%s nLockTime=%i)" \
-            % (self.nVersion, repr(self.vin), repr(self.vout), self.nLockTime)
+        return "CTransaction(nVersion={0} vin={1} vout={2} nLockTime={3})".format(
+            self.nVersion, repr(self.vin), repr(self.vout), self.nLockTime)
 
 
 class CBlockHeader(object):
@@ -490,9 +488,15 @@ class CBlockHeader(object):
         return self.sha256
 
     def __repr__(self):
-        return "CBlockHeader(nVersion=%i hashPrevBlock=%064x hashMerkleRoot=%064x nTime=%s nBits=%08x nNonce=%08x)" \
-            % (self.nVersion, self.hashPrevBlock, self.hashMerkleRoot,
-               time.ctime(self.nTime), self.nBits, self.nNonce)
+        return "CBlockHeader(nVersion={nVersion} hashPrevBlock={hashPrevBlock:064x} " \
+               "hashMerkleRoot={hashMerkleRoot:%064x} nTime={nTime} nBits={nBits:08x}" \
+               "nNonce={nNonce:08x})".format(
+                    nVersion=self.nVersion,
+                    hashPrevBlock=self.hashPrevBlock,
+                    hashMerkleRoot=self.hashMerkleRoot,
+                    nTime=time.ctime(self.nTime),
+                    nBits=self.nBits,
+                    nNonce=self.nNonce)
 
 
 class CBlock(CBlockHeader):

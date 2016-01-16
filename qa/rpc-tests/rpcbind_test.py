@@ -46,7 +46,7 @@ def run_allowip_test(tmpdir, allow_ips, rpchost, rpcport):
     nodes = start_nodes(1, tmpdir, [base_args])
     try:
         # connect to node through non-loopback interface
-        url = "http://rt:rt@%s:%d" % (rpchost, rpcport,)
+        url = "http://rt:rt@{0}:{0:d}".format(rpchost, rpcport)
         node = get_rpc_proxy(url, 1)
         node.getinfo()
     finally:
@@ -65,7 +65,7 @@ def run_test(tmpdir):
             break
     if non_loopback_ip is None:
         assert(not 'This test requires at least one non-loopback IPv4 interface')
-    print("Using interface %s for testing" % non_loopback_ip)
+    print("Using interface {0} for testing".format(non_loopback_ip))
 
     defaultport = rpc_port(0)
 

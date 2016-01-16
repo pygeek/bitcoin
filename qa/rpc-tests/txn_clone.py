@@ -48,11 +48,11 @@ class TxnMallTest(BitcoinTestFramework):
         # Coins are sent to node1_address
         node1_address = self.nodes[1].getnewaddress("from0")
 
-        # Send tx1, and another transaction tx2 that won't be cloned 
+        # Send tx1, and another transaction tx2 that won't be cloned
         txid1 = self.nodes[0].sendfrom("foo", node1_address, 40, 0)
         txid2 = self.nodes[0].sendfrom("bar", node1_address, 20, 0)
 
-        # Construct a clone of tx1, to be malleated 
+        # Construct a clone of tx1, to be malleated
         rawtx1 = self.nodes[0].getrawtransaction(txid1,1)
         clone_inputs = [{"txid":rawtx1["vin"][0]["txid"],"vout":rawtx1["vin"][0]["vout"]}]
         clone_outputs = {rawtx1["vout"][0]["scriptPubKey"]["addresses"][0]:rawtx1["vout"][0]["value"],
@@ -63,7 +63,7 @@ class TxnMallTest(BitcoinTestFramework):
 
         # manipulation 1. sequence is at version+#inputs+input+sigstub
         posseq = 2*(4+1+36+1)
-        seqbe = '%08x' % rawtx1["vin"][0]["sequence"]
+        seqbe = "{0:08x}".format(rawtx1["vin"][0]["sequence"])
         clone_raw = clone_raw[:posseq] + seqbe[6:8] + seqbe[4:6] + seqbe[2:4] + seqbe[0:2] + clone_raw[posseq + 8:]
 
         # manipulation 2. createrawtransaction randomizes the order of its outputs, so swap them if necessary.
@@ -80,7 +80,7 @@ class TxnMallTest(BitcoinTestFramework):
 
         # manipulation 3. locktime is after outputs
         poslt = pos0 + 2 * output_len
-        ltbe = '%08x' % rawtx1["locktime"]
+        ltbe = "{0:08x}".format(rawtx1["locktime"])
         clone_raw = clone_raw[:poslt] + ltbe[6:8] + ltbe[4:6] + ltbe[2:4] + ltbe[0:2] + clone_raw[poslt + 8:]
 
         # Use a different signature hash type to sign.  This creates an equivalent but malleated clone.
@@ -134,7 +134,7 @@ class TxnMallTest(BitcoinTestFramework):
         tx1 = self.nodes[0].gettransaction(txid1)
         tx1_clone = self.nodes[0].gettransaction(txid1_clone)
         tx2 = self.nodes[0].gettransaction(txid2)
-        
+
         # Verify expected confirmations
         assert_equal(tx1["confirmations"], -2)
         assert_equal(tx1_clone["confirmations"], 2)
@@ -143,7 +143,7 @@ class TxnMallTest(BitcoinTestFramework):
         # Check node0's total balance; should be same as before the clone, + 100 BTC for 2 matured,
         # less possible orphaned matured subsidy
         expected += 100
-        if (self.options.mine_block): 
+        if (self.options.mine_block):
             expected -= 50
         assert_equal(self.nodes[0].getbalance(), expected)
         assert_equal(self.nodes[0].getbalance("*", 0), expected)

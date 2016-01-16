@@ -11,7 +11,7 @@ argument:
     nodes_main.txt
     nodes_test.txt
 
-These files must consist of lines in the format 
+These files must consist of lines in the format
 
     <ip>
     <ip>:<port>
@@ -46,7 +46,7 @@ def name_to_ipv6(addr):
     if len(addr)>6 and addr.endswith('.onion'):
         vchAddr = b32decode(addr[0:-6], True)
         if len(vchAddr) != 16-len(pchOnionCat):
-            raise ValueError('Invalid onion %s' % s)
+            raise ValueError('Invalid onion {0}'.format(s))
         return pchOnionCat + vchAddr
     elif '.' in addr: # IPv4
         return pchIPv4 + bytearray((int(x) for x in addr.split('.')))
@@ -70,7 +70,7 @@ def name_to_ipv6(addr):
     elif addr.startswith('0x'): # IPv4-in-little-endian
         return pchIPv4 + bytearray(reversed(a2b_hex(addr[2:])))
     else:
-        raise ValueError('Could not parse address %s' % addr)
+        raise ValueError('Could not parse address {0}'.format(addr))
 
 def parse_spec(s, defaultport):
     match = re.match('\[([0-9a-fA-F:]+)\](?::([0-9]+))?$', s)
@@ -93,7 +93,7 @@ def parse_spec(s, defaultport):
     return (host,port)
 
 def process_nodes(g, f, structname, defaultport):
-    g.write('static SeedSpec6 %s[] = {\n' % structname)
+    g.write("static SeedSpec6 {0}[] = {\n".format(structname))
     first = True
     for line in f:
         comment = line.find('#')
@@ -107,13 +107,13 @@ def process_nodes(g, f, structname, defaultport):
         first = False
 
         (host,port) = parse_spec(line, defaultport)
-        hoststr = ','.join(('0x%02x' % b) for b in host)
-        g.write('    {{%s}, %i}' % (hoststr, port))
+        hoststr = ",".join(("0x{0:02x}".format(b)) for b in host)
+        g.write('    {{{0}}, {1}}'.format(hoststr, port))
     g.write('\n};\n')
 
 def main():
     if len(sys.argv)<2:
-        print(('Usage: %s <path_to_nodes_txt>' % sys.argv[0]), file=sys.stderr)
+        print(("Usage: {0} <path_to_nodes_txt>".format(sys.argv[0])), file=sys.stderr)
         exit(1)
     g = sys.stdout
     indir = sys.argv[1]
@@ -132,7 +132,7 @@ def main():
     with open(os.path.join(indir,'nodes_test.txt'),'r') as f:
         process_nodes(g, f, 'pnSeed6_test', 18333)
     g.write('#endif // BITCOIN_CHAINPARAMSSEEDS_H\n')
-            
+
 if __name__ == '__main__':
     main()
 

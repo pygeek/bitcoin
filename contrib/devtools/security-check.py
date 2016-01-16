@@ -163,7 +163,7 @@ if __name__ == '__main__':
         try:
             etype = identify_executable(filename)
             if etype is None:
-                print('%s: unknown format' % filename)
+                print('{0}: unknown format'.format(filename))
                 retval = 1
                 continue
 
@@ -172,10 +172,10 @@ if __name__ == '__main__':
                 if not func(filename):
                     failed.append(name)
             if failed:
-                print('%s: failed %s' % (filename, ' '.join(failed)))
+                print('{0}: failed {1}'.format(filename, ' '.join(failed)))
                 retval = 1
         except IOError:
-            print('%s: cannot open' % filename)
+            print('{0}: cannot open'.format(filename))
             retval = 1
     exit(retval)
 

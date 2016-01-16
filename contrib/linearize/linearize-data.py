@@ -7,7 +7,7 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #
 
-from __future__ import print_function, division
+from __future__ import with_statement, division
 import json
 import struct
 import re
@@ -28,7 +28,7 @@ def uint32(x):
 
 def bytereverse(x):
 	return uint32(( ((x) << 24) | (((x) << 8) & 0x00ff0000) |
-		       (((x) >> 8) & 0x0000ff00) | ((x) >> 24) ))
+			   (((x) >> 8) & 0x0000ff00) | ((x) >> 24) ))
 
 def bufreverse(in_buf):
 	out_words = []
@@ -134,7 +134,7 @@ class BlockDataCopier:
 
 		(blkDate, blkTS) = get_blk_dt(blk_hdr)
 		if self.timestampSplit and (blkDate > self.lastDate):
-			print("New month " + blkDate.strftime("%Y-%m") + " @ " + hash_str)
+			print("New month {0} @ {1}".format(blkDate.strftime("%Y-%m"), hash_str))
 			lastDate = blkDate
 			if outF:
 				outF.close()
@@ -149,7 +149,7 @@ class BlockDataCopier:
 			if self.fileOutput:
 				outFname = self.settings['output_file']
 			else:
-				outFname = os.path.join(self.settings['output'], "blk%05d.dat" % self.outFn)
+				outFname = os.path.join(self.settings['output'], "blk{0:05d}.dat".format(self.outFn))
 			print("Output file " + outFname)
 			self.outF = open(outFname, "wb")
 
@@ -163,11 +163,11 @@ class BlockDataCopier:
 			self.highTS = blkTS
 
 		if (self.blkCountOut % 1000) == 0:
-			print('%i blocks scanned, %i blocks written (of %i, %.1f%% complete)' % 
-					(self.blkCountIn, self.blkCountOut, len(self.blkindex), 100.0 * self.blkCountOut / len(self.blkindex)))
+			print('{0} blocks scanned, {1} blocks written (of {2}, {2.1f%} complete)'.format(
+				self.blkCountIn, self.blkCountOut, len(self.blkindex), 100.0 * self.blkCountOut / len(self.blkindex)))
 
 	def inFileName(self, fn):
-		return os.path.join(self.settings['input'], "blk%05d.dat" % fn)
+		return os.path.join(self.settings['input'], "blk{0:05d}.dat".format(fn))
 
 	def fetchBlock(self, extent):
 		'''Fetch block contents from disk given extents'''
@@ -244,7 +244,7 @@ class BlockDataCopier:
 				else: # If no space in cache, seek forward
 					self.inF.seek(inLen, os.SEEK_CUR)
 
-		print("Done (%i blocks written)" % (self.blkCountOut))
+		print("Done ({0} blocks written)".format(self.blkCountOut))
 
 if __name__ == '__main__':
 	if len(sys.argv) != 2:
@@ -291,5 +291,3 @@ if __name__ == '__main__':
 		print("Genesis block not found in hashlist")
 	else:
 		BlockDataCopier(settings, blkindex, blkmap).run()
-
-

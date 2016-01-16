@@ -44,12 +44,12 @@ def check_array_result(object_array, to_match, expected, should_not_find = False
             continue
         for key,value in expected.items():
             if item[key] != value:
-                raise AssertionError("%s : expected %s=%s"%(str(item), str(key), str(value)))
+                raise AssertionError("{0} : expected {1}={2}".format(str(item), str(key), str(value)))
             num_matched = num_matched+1
     if num_matched == 0 and should_not_find != True:
-        raise AssertionError("No objects matched %s"%(str(to_match)))
+        raise AssertionError("No objects matched {0}".format(str(to_match)))
     if num_matched > 0 and should_not_find == True:
-        raise AssertionError("Objects was matched %s"%(str(to_match)))
+        raise AssertionError("Objects was matched {0}".format(str(to_match)))
 
 class ReceivedByTest(BitcoinTestFramework):
 
@@ -97,19 +97,19 @@ class ReceivedByTest(BitcoinTestFramework):
         #Check balance is 0 because of 0 confirmations
         balance = self.nodes[1].getreceivedbyaddress(addr)
         if balance != Decimal("0.0"):
-            raise AssertionError("Wrong balance returned by getreceivedbyaddress, %0.2f"%(balance))
+            raise AssertionError("Wrong balance returned by getreceivedbyaddress, {0:0.02f}".format(balance))
 
         #Check balance is 0.1
         balance = self.nodes[1].getreceivedbyaddress(addr,0)
         if balance != Decimal("0.1"):
-            raise AssertionError("Wrong balance returned by getreceivedbyaddress, %0.2f"%(balance))
+            raise AssertionError("Wrong balance returned by getreceivedbyaddress, {0:0.02f}".format(balance))
 
         #Bury Tx under 10 block so it will be returned by the default getreceivedbyaddress
         self.nodes[1].generate(10)
         self.sync_all()
         balance = self.nodes[1].getreceivedbyaddress(addr)
         if balance != Decimal("0.1"):
-            raise AssertionError("Wrong balance returned by getreceivedbyaddress, %0.2f"%(balance))
+            raise AssertionError("Wrong balance returned by getreceivedbyaddress, {0:0.2f}".format(balance))
 
         '''
             listreceivedbyaccount + getreceivedbyaccount Test
@@ -133,7 +133,7 @@ class ReceivedByTest(BitcoinTestFramework):
         # getreceivedbyaddress should return same balance because of 0 confirmations
         balance = self.nodes[1].getreceivedbyaccount(account)
         if balance != balance_by_account:
-            raise AssertionError("Wrong balance returned by getreceivedbyaccount, %0.2f"%(balance))
+            raise AssertionError("Wrong balance returned by getreceivedbyaccount, {0:0.2f}".format(balance))
 
         self.nodes[1].generate(10)
         self.sync_all()
@@ -145,7 +145,7 @@ class ReceivedByTest(BitcoinTestFramework):
         # getreceivedbyaddress should return updates balance
         balance = self.nodes[1].getreceivedbyaccount(account)
         if balance != balance_by_account + Decimal("0.1"):
-            raise AssertionError("Wrong balance returned by getreceivedbyaccount, %0.2f"%(balance))
+            raise AssertionError("Wrong balance returned by getreceivedbyaccount, {0:0.2f}".format(balance))
 
         #Create a new account named "mynewaccount" that has a 0 balance
         self.nodes[1].getaccountaddress("mynewaccount")
@@ -155,12 +155,12 @@ class ReceivedByTest(BitcoinTestFramework):
 
         # Test includeempty of listreceivedbyaccount
         if received_by_account_json["amount"] != Decimal("0.0"):
-            raise AssertionError("Wrong balance returned by listreceivedbyaccount, %0.2f"%(received_by_account_json["amount"]))
+            raise AssertionError("Wrong balance returned by listreceivedbyaccount, {0:0.2f}".format(received_by_account_json["amount"]))
 
         # Test getreceivedbyaccount for 0 amount accounts
         balance = self.nodes[1].getreceivedbyaccount("mynewaccount")
         if balance != Decimal("0.0"):
-            raise AssertionError("Wrong balance returned by getreceivedbyaccount, %0.2f"%(balance))
+            raise AssertionError("Wrong balance returned by getreceivedbyaccount, {0:0.2f}".format(balance))
 
 if __name__ == '__main__':
     ReceivedByTest().main()

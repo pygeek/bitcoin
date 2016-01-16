@@ -19,8 +19,8 @@ settings = {}
 
 class BitcoinRPC:
 	def __init__(self, host, port, username, password):
-		authpair = "%s:%s" % (username, password)
-		self.authhdr = "Basic %s" % (base64.b64encode(authpair))
+		authpair = "{0}:{1}".format(username, password)
+		self.authhdr = "Basic {0}".format(base64.b64encode(authpair))
 		self.conn = httplib.HTTPConnection(host, port, False, 30)
 
 	def execute(self, obj):
@@ -93,15 +93,12 @@ if __name__ == '__main__':
 		settings[m.group(1)] = m.group(2)
 	f.close()
 
-	if 'host' not in settings:
-		settings['host'] = '127.0.0.1'
-	if 'port' not in settings:
-		settings['port'] = 8332
-	if 'min_height' not in settings:
-		settings['min_height'] = 0
-	if 'max_height' not in settings:
-		settings['max_height'] = 313000
-	if 'rpcuser' not in settings or 'rpcpassword' not in settings:
+	settings.setdefault('host', '127.0.0.1')
+	settings.setdefault('port', 8332)
+	settings.setdefault('min_height', 0)
+	settings.setdefault('max_height', 313000)
+
+	if not settings.get('rpcuser') or not settings.get('rpcuser'):
 		print("Missing username and/or password in cfg file", file=stderr)
 		sys.exit(1)
 

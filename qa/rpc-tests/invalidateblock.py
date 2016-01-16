@@ -11,19 +11,19 @@ from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import *
 
 class InvalidateTest(BitcoinTestFramework):
-    
-        
+
+
     def setup_chain(self):
         print("Initializing test directory "+self.options.tmpdir)
         initialize_chain_clean(self.options.tmpdir, 3)
-                 
+
     def setup_network(self):
         self.nodes = []
-        self.is_network_split = False 
+        self.is_network_split = False
         self.nodes.append(start_node(0, self.options.tmpdir, ["-debug"]))
         self.nodes.append(start_node(1, self.options.tmpdir, ["-debug"]))
         self.nodes.append(start_node(2, self.options.tmpdir, ["-debug"]))
-        
+
     def run_test(self):
         print "Make sure we repopulate setBlockIndexCandidates after InvalidateBlock:"
         print "Mine 4 blocks on Node 0"
@@ -46,7 +46,7 @@ class InvalidateTest(BitcoinTestFramework):
         newheight = self.nodes[0].getblockcount()
         newhash = self.nodes[0].getbestblockhash()
         if (newheight != 4 or newhash != besthash):
-            raise AssertionError("Wrong tip for node0, hash %s, height %d"%(newhash,newheight))
+            raise AssertionError("Wrong tip for node0, hash {0}, height {1:d}".format(newhash,newheight))
 
         print "\nMake sure we won't reorg to a lower work chain:"
         connect_nodes_bi(self.nodes,1,2)
@@ -69,7 +69,7 @@ class InvalidateTest(BitcoinTestFramework):
         assert(self.nodes[0].getblockcount() == 4)
         node1height = self.nodes[1].getblockcount()
         if node1height < 4:
-            raise AssertionError("Node 1 reorged to a lower height: %d"%node1height)
+            raise AssertionError("Node 1 reorged to a lower height: {0:d}".format(node1height))
 
 if __name__ == '__main__':
     InvalidateTest().main()

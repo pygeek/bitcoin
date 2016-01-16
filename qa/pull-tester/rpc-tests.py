@@ -137,13 +137,13 @@ def runtests():
 
     if ENABLE_COVERAGE:
         coverage = RPCCoverage()
-        print("Initializing coverage directory at %s\n" % coverage.dir)
+        print("Initializing coverage directory at {0}\n".format(coverage.dir))
 
     if(ENABLE_WALLET == 1 and ENABLE_UTILS == 1 and ENABLE_BITCOIND == 1):
         rpcTestDir = buildDir + '/qa/rpc-tests/'
         run_extended = '-extended' in opts
         cov_flag = coverage.flag if coverage else ''
-        flags = " --srcdir %s/src %s %s" % (buildDir, cov_flag, passOn)
+        flags = " --srcdir {0}/src {1} {2}".format(buildDir, cov_flag, passOn)
 
         #Run Tests
         for i in range(len(testScripts)):
@@ -153,11 +153,11 @@ def runtests():
                     or testScripts[i] in opts
                     or re.sub(".py$", "", testScripts[i]) in opts ):
 
-                print("Running testscript %s%s%s ..." % (bold[1], testScripts[i], bold[0]))
+                print("Running testscript {0}{1}{2} ...".format(bold[1], testScripts[i], bold[0]))
                 time0 = time.time()
                 subprocess.check_call(
                     rpcTestDir + testScripts[i] + flags, shell=True)
-                print("Duration: %s s\n" % (int(time.time() - time0)))
+                print("Duration: {0} s\n".format(int(time.time() - time0)))
 
                 # exit if help is called so we print just one set of
                 # instructions
@@ -172,11 +172,11 @@ def runtests():
 
                 print(
                     "Running 2nd level testscript "
-                    + "%s%s%s ..." % (bold[1], testScriptsExt[i], bold[0]))
+                    + "{0}{1}{2} ...".format(bold[1], testScriptsExt[i], bold[0]))
                 time0 = time.time()
                 subprocess.check_call(
                     rpcTestDir + testScriptsExt[i] + flags, shell=True)
-                print("Duration: %s s\n" % (int(time.time() - time0)))
+                print("Duration: {0} s\n".format(int(time.time() - time0)))
 
         if coverage:
             coverage.report_rpc_coverage()
@@ -205,7 +205,7 @@ class RPCCoverage(object):
     """
     def __init__(self):
         self.dir = tempfile.mkdtemp(prefix="coverage")
-        self.flag = '--coveragedir %s' % self.dir
+        self.flag = '--coveragedir {0}'.format(self.dir)
 
     def report_rpc_coverage(self):
         """
@@ -216,7 +216,7 @@ class RPCCoverage(object):
 
         if uncovered:
             print("Uncovered RPC commands:")
-            print("".join(("  - %s\n" % i) for i in sorted(uncovered)))
+            print("".join(("  - {0}\n".format(i)) for i in sorted(uncovered)))
         else:
             print("All RPC commands covered.")
 

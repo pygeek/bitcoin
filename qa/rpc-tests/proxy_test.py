@@ -34,7 +34,7 @@ addnode connect to onion
 addnode connect to generic DNS name
 '''
 
-class ProxyTest(BitcoinTestFramework):        
+class ProxyTest(BitcoinTestFramework):
     def __init__(self):
         # Create two proxies on different ports
         # ... one unauthenticated
@@ -65,10 +65,10 @@ class ProxyTest(BitcoinTestFramework):
         # Note: proxies are not used to connect to local nodes
         # this is because the proxy to use is based on CService.GetNetwork(), which return NET_UNROUTABLE for localhost
         return start_nodes(4, self.options.tmpdir, extra_args=[
-            ['-listen', '-debug=net', '-debug=proxy', '-proxy=%s:%i' % (self.conf1.addr),'-proxyrandomize=1'], 
-            ['-listen', '-debug=net', '-debug=proxy', '-proxy=%s:%i' % (self.conf1.addr),'-onion=%s:%i' % (self.conf2.addr),'-proxyrandomize=0'], 
-            ['-listen', '-debug=net', '-debug=proxy', '-proxy=%s:%i' % (self.conf2.addr),'-proxyrandomize=1'], 
-            ['-listen', '-debug=net', '-debug=proxy', '-proxy=[%s]:%i' % (self.conf3.addr),'-proxyrandomize=0', '-noonion']
+            ['-listen', '-debug=net', '-debug=proxy', '-proxy={0}:{1}'.format(self.conf1.addr),'-proxyrandomize=1'],
+            ['-listen', '-debug=net', '-debug=proxy', '-proxy={0}:{1}'.format(self.conf1.addr),'-onion={0}:{1}'.format(self.conf2.addr),'-proxyrandomize=0'],
+            ['-listen', '-debug=net', '-debug=proxy', '-proxy={0}:{1}'.format(self.conf2.addr),'-proxyrandomize=1'],
+            ['-listen', '-debug=net', '-debug=proxy', '-proxy=[{0}]:{1}'.format(self.conf3.addr),'-proxyrandomize=0', '-noonion']
             ])
 
     def node_test(self, node, proxies, auth, test_onion=True):
@@ -151,27 +151,27 @@ class ProxyTest(BitcoinTestFramework):
         # test RPC getnetworkinfo
         n0 = networks_dict(self.nodes[0].getnetworkinfo())
         for net in ['ipv4','ipv6','onion']:
-            assert_equal(n0[net]['proxy'], '%s:%i' % (self.conf1.addr))
+            assert_equal(n0[net]['proxy'], '{0}:{1}'.format(self.conf1.addr))
             assert_equal(n0[net]['proxy_randomize_credentials'], True)
         assert_equal(n0['onion']['reachable'], True)
 
         n1 = networks_dict(self.nodes[1].getnetworkinfo())
         for net in ['ipv4','ipv6']:
-            assert_equal(n1[net]['proxy'], '%s:%i' % (self.conf1.addr))
+            assert_equal(n1[net]['proxy'], '{0}:{1}'.format(self.conf1.addr))
             assert_equal(n1[net]['proxy_randomize_credentials'], False)
-        assert_equal(n1['onion']['proxy'], '%s:%i' % (self.conf2.addr))
+        assert_equal(n1['onion']['proxy'], '{0}:{1}'.format(self.conf2.addr))
         assert_equal(n1['onion']['proxy_randomize_credentials'], False)
         assert_equal(n1['onion']['reachable'], True)
-        
+
         n2 = networks_dict(self.nodes[2].getnetworkinfo())
         for net in ['ipv4','ipv6','onion']:
-            assert_equal(n2[net]['proxy'], '%s:%i' % (self.conf2.addr))
+            assert_equal(n2[net]['proxy'], '{0}:{1}'.format(self.conf2.addr))
             assert_equal(n2[net]['proxy_randomize_credentials'], True)
         assert_equal(n2['onion']['reachable'], True)
 
         n3 = networks_dict(self.nodes[3].getnetworkinfo())
         for net in ['ipv4','ipv6']:
-            assert_equal(n3[net]['proxy'], '[%s]:%i' % (self.conf3.addr))
+            assert_equal(n3[net]['proxy'], '[{0}]:{1}'.format(self.conf3.addr))
             assert_equal(n3[net]['proxy_randomize_credentials'], False)
         assert_equal(n3['onion']['reachable'], False)
 

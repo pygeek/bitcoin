@@ -48,7 +48,13 @@ class Socks5Command(object):
         self.username = username
         self.password = password
     def __repr__(self):
-        return 'Socks5Command(%s,%s,%s,%s,%s,%s)' % (self.cmd, self.atyp, self.addr, self.port, self.username, self.password)
+        return "Socks5Command({cmd},{atyp},{addr},{port},{username},{password)".format(
+            cmd=self.cmd,
+            atyp=self.atyp,
+            addr=self.addr,
+            port=self.port,
+            username=self.username,
+            password=self.password)
 
 class Socks5Connection(object):
     def __init__(self, serv, conn, peer):
@@ -64,7 +70,7 @@ class Socks5Connection(object):
             # Verify socks version
             ver = recvall(self.conn, 1)[0]
             if ver != 0x05:
-                raise IOError('Invalid socks version %i' % ver)
+                raise IOError('Invalid socks version {0}'.format(ver))
             # Choose authentication method
             nmethods = recvall(self.conn, 1)[0]
             methods = bytearray(recvall(self.conn, nmethods))
@@ -83,7 +89,7 @@ class Socks5Connection(object):
             if method == 0x02:
                 ver = recvall(self.conn, 1)[0]
                 if ver != 0x01:
-                    raise IOError('Invalid auth packet version %i' % ver)
+                    raise IOError('Invalid auth packet version {0}'.format(ver))
                 ulen = recvall(self.conn, 1)[0]
                 username = str(recvall(self.conn, ulen))
                 plen = recvall(self.conn, 1)[0]
@@ -94,9 +100,9 @@ class Socks5Connection(object):
             # Read connect request
             (ver,cmd,rsv,atyp) = recvall(self.conn, 4)
             if ver != 0x05:
-                raise IOError('Invalid socks version %i in connect request' % ver)
+                raise IOError('Invalid socks version {0} in connect request'.format(ver))
             if cmd != Command.CONNECT:
-                raise IOError('Unhandled command %i in connect request' % cmd)
+                raise IOError('Unhandled command {0} in connect request'.format(cmd))
 
             if atyp == AddressType.IPV4:
                 addr = recvall(self.conn, 4)
@@ -106,7 +112,7 @@ class Socks5Connection(object):
             elif atyp == AddressType.IPV6:
                 addr = recvall(self.conn, 16)
             else:
-                raise IOError('Unknown address type %i' % atyp)
+                raise IOError('Unknown address type {0}'.format(atyp))
             port_hi,port_lo = recvall(self.conn, 2)
             port = (port_hi << 8) | port_lo
 
@@ -142,7 +148,7 @@ class Socks5Server(object):
                 thread = threading.Thread(None, conn.handle)
                 thread.daemon = True
                 thread.start()
-    
+
     def start(self):
         assert(not self.running)
         self.running = True

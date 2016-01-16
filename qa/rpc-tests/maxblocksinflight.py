@@ -20,7 +20,7 @@ MAX_REQUESTS = 128
 class TestManager(NodeConnCB):
     # set up NodeConnCB callbacks, overriding base class
     def on_getdata(self, conn, message):
-        self.log.debug("got getdata %s" % repr(message))
+        self.log.debug("got getdata {0}".format(repr(message)))
         # Log the requests
         for inv in message.inv:
             if inv.hash not in self.blockReqCounts:
@@ -55,7 +55,7 @@ class TestManager(NodeConnCB):
                         current_invs = []
                 if len(current_invs) > 0:
                     self.connection.send_message(msg_inv(current_invs))
-                
+
                 # Wait and see how many blocks were requested
                 time.sleep(2)
 
@@ -64,17 +64,20 @@ class TestManager(NodeConnCB):
                     for key in self.blockReqCounts:
                         total_requests += self.blockReqCounts[key]
                         if self.blockReqCounts[key] > 1:
-                            raise AssertionError("Error, test failed: block %064x requested more than once" % key)
+                            raise AssertionError(
+                                "Error, test failed: block {0:064x}" \
+                                "requested more than once".format(key))
                 if total_requests > MAX_REQUESTS:
-                    raise AssertionError("Error, too many blocks (%d) requested" % total_requests)
-                print "Round %d: success (total requests: %d)" % (count, total_requests)
+                    raise AssertionError("Error, too many blocks ({0:d}) requested".format(total_requests))
+
+                print "Round {0:d}: success (total requests: {1:d})".format(count, total_requests)
         except AssertionError as e:
             print "TEST FAILED: ", e.args
 
         self.disconnectOkay = True
         self.connection.disconnect_node()
 
-        
+
 class MaxBlocksInFlightTest(BitcoinTestFramework):
     def add_options(self, parser):
         parser.add_option("--testbinary", dest="testbinary",
@@ -86,7 +89,7 @@ class MaxBlocksInFlightTest(BitcoinTestFramework):
         initialize_chain_clean(self.options.tmpdir, 1)
 
     def setup_network(self):
-        self.nodes = start_nodes(1, self.options.tmpdir, 
+        self.nodes = start_nodes(1, self.options.tmpdir,
                                  extra_args=[['-debug', '-whitelist=127.0.0.1']],
                                  binary=[self.options.testbinary])
 

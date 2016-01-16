@@ -94,7 +94,7 @@ def read_symbols(executable, imports=True):
     p = subprocess.Popen([READELF_CMD, '--dyn-syms', '-W', executable], stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
     (stdout, stderr) = p.communicate()
     if p.returncode:
-        raise IOError('Could not read symbols for %s: %s' % (executable, stderr.strip()))
+        raise IOError('Could not read symbols for {0}: {1}'.format(executable, stderr.strip()))
     syms = []
     for line in stdout.split('\n'):
         line = line.split()
@@ -141,18 +141,18 @@ if __name__ == '__main__':
         # Check imported symbols
         for sym,version in read_symbols(filename, True):
             if version and not check_version(MAX_VERSIONS, version):
-                print('%s: symbol %s from unsupported version %s' % (filename, cppfilt(sym), version))
+                print('{0}: symbol %s from unsupported version {1}'.format(filename, cppfilt(sym), version))
                 retval = 1
         # Check exported symbols
         for sym,version in read_symbols(filename, False):
             if sym in IGNORE_EXPORTS:
                 continue
-            print('%s: export of symbol %s not allowed' % (filename, cppfilt(sym)))
+            print('{0}: export of symbol %s not allowed'.format(filename, cppfilt(sym)))
             retval = 1
         # Check dependency libraries
         for library_name in read_libraries(filename):
             if library_name not in ALLOWED_LIBRARIES:
-                print('%s: NEEDED library %s is not allowed' % (filename, library_name))
+                print('{0}: NEEDED library %s is not allowed'.format(filename, library_name))
                 retval = 1
 
     exit(retval)

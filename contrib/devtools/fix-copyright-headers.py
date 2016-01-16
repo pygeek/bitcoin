@@ -16,10 +16,13 @@ import time
 import re
 
 year = time.gmtime()[0]
+
+#TODO: Convert to modern python string formatting.
+#See: https://docs.python.org/2/library/string.html#format-examples
 CMD_GIT_DATE = 'git log --format=@%%at -1 %s | date +"%%Y" -u -f -'
 CMD_REGEX= "perl -pi -e 's/(20\d\d)(?:-20\d\d)? The Bitcoin/$1-%s The Bitcoin/' %s"
-REGEX_CURRENT= re.compile("%s The Bitcoin" % year)
-CMD_LIST_FILES= "find %s | grep %s"
+REGEX_CURRENT= re.compile("{0} The Bitcoin".format(year))
+CMD_LIST_FILES= "find {folder} | grep {extension}"
 
 FOLDERS = ["./qa", "./src"]
 EXTENSIONS = [".cpp",".h", ".py"]
@@ -34,7 +37,7 @@ def get_git_date(file_path):
 n=1
 for folder in FOLDERS:
   for extension in EXTENSIONS:
-    for file_path in os.popen(CMD_LIST_FILES % (folder, extension)):
+    for file_path in os.popen(CMD_LIST_FILES.format(folder=folder, extension=extension)):
       file_path = os.getcwd() + file_path[1:-1]
       if file_path.endswith(extension):
         git_date = get_git_date(file_path)

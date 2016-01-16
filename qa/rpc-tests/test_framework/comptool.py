@@ -53,7 +53,7 @@ class RejectResult(object):
             return False
         return other.reason.startswith(self.reason)
     def __repr__(self):
-        return '%i:%s' % (self.code,self.reason or '*')
+        return '{1}:{2}'.format(self.code,self.reason or '*')
 
 class TestNode(NodeConnCB):
 
@@ -68,9 +68,9 @@ class TestNode(NodeConnCB):
         self.block_reject_map = {}
         self.tx_reject_map = {}
 
-        # When the pingmap is non-empty we're waiting for 
+        # When the pingmap is non-empty we're waiting for
         # a response
-        self.pingMap = {} 
+        self.pingMap = {}
         self.lastInv = []
         self.closed = False
 
@@ -108,7 +108,7 @@ class TestNode(NodeConnCB):
         try:
             del self.pingMap[message.nonce]
         except KeyError:
-            raise AssertionError("Got pong for unknown ping [%s]" % repr(message))
+            raise AssertionError("Got pong for unknown ping [{0}]".format(repr(message)))
 
     def on_reject(self, conn, message):
         if message.message == 'tx':
@@ -160,7 +160,7 @@ class TestNode(NodeConnCB):
 #    nodes will be tested based on the outcome for the block.  If False,
 #    then inv's accumulate until all blocks are processed (or max inv size
 #    is reached) and then sent out in one inv message.  Then the final block
-#    will be synced across all connections, and the outcome of the final 
+#    will be synced across all connections, and the outcome of the final
 #    block will be tested.
 # sync_every_tx: analogous to behavior for sync_every_block, except if outcome
 #    on the final tx is None, then contents of entire mempool are compared
@@ -269,10 +269,10 @@ class TestManager(object):
                     if c.cb.bestblockhash == blockhash:
                         return False
                     if blockhash not in c.cb.block_reject_map:
-                        print 'Block not in reject map: %064x' % (blockhash)
+                        print "Block not in reject map: {0:064x}".format(blockhash)
                         return False
                     if not outcome.match(c.cb.block_reject_map[blockhash]):
-                        print 'Block rejected with %s instead of expected %s: %064x' % (c.cb.block_reject_map[blockhash], outcome, blockhash)
+                        print "Block rejected with {0} instead of expected {1}: {2:064x}".format(c.cb.block_reject_map[blockhash], outcome, blockhash)
                         return False
                 elif ((c.cb.bestblockhash == blockhash) != outcome):
                     # print c.cb.bestblockhash, blockhash, outcome
@@ -297,10 +297,11 @@ class TestManager(object):
                     if txhash in c.cb.lastInv:
                         return False
                     if txhash not in c.cb.tx_reject_map:
-                        print 'Tx not in reject map: %064x' % (txhash)
+                        print "Tx not in reject map: {0:064x}".format(txhash)
                         return False
                     if not outcome.match(c.cb.tx_reject_map[txhash]):
-                        print 'Tx rejected with %s instead of expected %s: %064x' % (c.cb.tx_reject_map[txhash], outcome, txhash)
+                        print "Tx rejected with {0} instead of expected {1}: {2:064x}".format(
+                            c.cb.tx_reject_map[txhash], outcome, txhash)
                         return False
                 elif ((txhash in c.cb.lastInv) != outcome):
                     # print c.rpc.getrawmempool(), c.cb.lastInv
@@ -359,7 +360,7 @@ class TestManager(object):
                         [ c.cb.send_inv(block) for c in self.connections ]
                         self.sync_blocks(block.sha256, 1)
                         if (not self.check_results(tip, outcome)):
-                            raise AssertionError("Test failed at test %d" % test_number)
+                            raise AssertionError("Test failed at test {0:d}".format(test_number))
                     else:
                         invqueue.append(CInv(2, block.sha256))
                 elif isinstance(b_or_t, CBlockHeader):
@@ -379,7 +380,7 @@ class TestManager(object):
                         [ c.cb.send_inv(tx) for c in self.connections ]
                         self.sync_transaction(tx.sha256, 1)
                         if (not self.check_mempool(tx.sha256, outcome)):
-                            raise AssertionError("Test failed at test %d" % test_number)
+                            raise AssertionError("Test failed at test {0:d}".format(test_number))
                     else:
                         invqueue.append(CInv(1, tx.sha256))
                 # Ensure we're not overflowing the inv queue
@@ -394,16 +395,16 @@ class TestManager(object):
                     invqueue = []
                 self.sync_blocks(block.sha256, len(test_instance.blocks_and_transactions))
                 if (not self.check_results(tip, block_outcome)):
-                    raise AssertionError("Block test failed at test %d" % test_number)
+                    raise AssertionError("Block test failed at test {0:d}".format(test_number))
             if (not test_instance.sync_every_tx and tx is not None):
                 if len(invqueue) > 0:
                     [ c.send_message(msg_inv(invqueue)) for c in self.connections ]
                     invqueue = []
                 self.sync_transaction(tx.sha256, len(test_instance.blocks_and_transactions))
                 if (not self.check_mempool(tx.sha256, tx_outcome)):
-                    raise AssertionError("Mempool test failed at test %d" % test_number)
+                    raise AssertionError("Mempool test failed at test {0:d}".format(test_number))
 
-            print "Test %d: PASS" % test_number, [ c.rpc.getblockcount() for c in self.connections ]
+            print "Test {0}: PASS".format(test_number, [ c.rpc.getblockcount() for c in self.connections ])
             test_number += 1
 
         [ c.disconnect_node() for c in self.connections ]

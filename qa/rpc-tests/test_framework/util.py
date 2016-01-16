@@ -147,7 +147,7 @@ def initialize_chain(test_dir):
 
         for i in range(4):
             try:
-                url = "http://rt:rt@127.0.0.1:%d" % (rpc_port(i),)
+                url = "http://rt:rt@127.0.0.1:{0}".format(rpc_port(i))
                 rpcs.append(get_rpc_proxy(url, i))
             except:
                 sys.stderr.write("Error connecting to "+url+"\n")
@@ -231,7 +231,7 @@ def start_node(i, dirname, extra_args=None, rpchost=None, timewait=None, binary=
     if os.getenv("PYTHON_DEBUG", ""):
         print "start_node: calling bitcoin-cli -rpcwait getblockcount returned"
     devnull.close()
-    url = "http://rt:rt@%s:%d" % (rpchost or '127.0.0.1', rpc_port(i))
+    url = "http://rt:rt@{0}:{1:d}".format(rpchost or '127.0.0.1', rpc_port(i))
 
     proxy = get_rpc_proxy(url, i, timeout=timewait)
 
@@ -292,7 +292,7 @@ def find_output(node, txid, amount):
     for i in range(len(txdata["vout"])):
         if txdata["vout"][i]["value"] == amount:
             return i
-    raise RuntimeError("find_output txid %s : %s not found"%(txid,str(amount)))
+    raise RuntimeError("find_output txid {0} : {1} not found".format(txid,str(amount)))
 
 
 def gather_inputs(from_node, amount_needed, confirmations_required=1):
@@ -309,7 +309,7 @@ def gather_inputs(from_node, amount_needed, confirmations_required=1):
         total_in += t["amount"]
         inputs.append({ "txid" : t["txid"], "vout" : t["vout"], "address" : t["address"] } )
     if total_in < amount_needed:
-        raise RuntimeError("Insufficient funds: need %d, have %d"%(amount_needed, total_in))
+        raise RuntimeError("Insufficient funds: need {0:d}, have {1:d}".format(amount_needed, total_in))
     return (total_in, inputs)
 
 def make_change(from_node, amount_in, amount_out, fee):
@@ -391,11 +391,11 @@ def random_transaction(nodes, amount, min_fee, fee_increment, fee_variants):
 
 def assert_equal(thing1, thing2):
     if thing1 != thing2:
-        raise AssertionError("%s != %s"%(str(thing1),str(thing2)))
+        raise AssertionError("{0} != {1}".format(str(thing1),str(thing2)))
 
 def assert_greater_than(thing1, thing2):
     if thing1 <= thing2:
-        raise AssertionError("%s <= %s"%(str(thing1),str(thing2)))
+        raise AssertionError("{0} <= {1}".format(str(thing1),str(thing2)))
 
 def assert_raises(exc, fun, *args, **kwds):
     try:

@@ -29,7 +29,7 @@ def get_socket_inodes(pid):
     '''
     Get list of socket inodes for process pid.
     '''
-    base = '/proc/%i/fd' % pid
+    base = '/proc/{0}/fd'.format(pid)
     inodes = []
     for item in os.listdir(base):
         target = os.readlink(os.path.join(base, item))
@@ -47,7 +47,7 @@ def _convert_ip_port(array):
     host_out = ''
     for x in range(0, len(host)/4):
         (val,) = struct.unpack('=I', host[x*4:(x+1)*4])
-        host_out += '%08x' % val
+        host_out += '{0:08x}'.format(val)
 
     return host_out,int(port,16)
 
@@ -135,5 +135,5 @@ def addr_to_hex(addr):
         assert((x == 0 and nullbytes == 0) or (x == 1 and nullbytes > 0))
         addr = sub[0] + ([0] * nullbytes) + sub[1]
     else:
-        raise ValueError('Could not parse address %s' % addr)
+        raise ValueError('Could not parse address {0}'.format(addr))
     return binascii.hexlify(bytearray(addr))

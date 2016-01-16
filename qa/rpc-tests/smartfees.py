@@ -47,7 +47,7 @@ def small_txpuzzle_randfee(from_node, conflist, unconflist, amount, min_fee, fee
             total_in += t["amount"]
             inputs.append({ "txid" : t["txid"], "vout" : t["vout"]} )
         if total_in <= amount + fee:
-            raise RuntimeError("Insufficient funds: need %d, have %d"%(amount+fee, total_in))
+            raise RuntimeError("Insufficient funds: need {0:d}, have {1:d}".format(amount+fee, total_in))
     outputs = {}
     outputs[P2SH_1] = total_in - amount - fee
     outputs[P2SH_2] = amount
@@ -108,12 +108,12 @@ def check_estimates(node, fees_seen, max_invalid, print_estimates = True):
     for e in filter(lambda x: x >= 0, all_estimates):
         # Estimates should be within the bounds of what transactions fees actually were:
         if float(e)+delta < min(fees_seen) or float(e)-delta > max(fees_seen):
-            raise AssertionError("Estimated fee (%f) out of range (%f,%f)"
-                                 %(float(e), min(fees_seen), max(fees_seen)))
+            raise AssertionError("Estimated fee ({0:f}) out of range ({1:f},{2:f})".format(
+                float(e), min(fees_seen), max(fees_seen)))
         # Estimates should be monotonically decreasing
         if float(e)-delta > last_e:
-            raise AssertionError("Estimated fee (%f) larger than last fee (%f) for lower number of confirms"
-                                 %(float(e),float(last_e)))
+            raise AssertionError("Estimated fee ({0:f}) larger than last fee ({1:f}) for lower number of confirms".format(
+                float(e),float(last_e)))
         last_e = e
     valid_estimate = False
     invalid_estimates = 0
@@ -140,7 +140,7 @@ def check_estimates(node, fees_seen, max_invalid, print_estimates = True):
     # Check on the expected number of different confirmation counts
     # that we might not have valid estimates for
     if invalid_estimates > max_invalid:
-        raise AssertionError("More than (%d) invalid estimates"%(max_invalid))
+        raise AssertionError("More than ({0:d}) invalid estimates".format(max_invalid))
     return all_estimates
 
 

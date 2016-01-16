@@ -103,7 +103,7 @@ class AuthServiceProxy(object):
             # Python internal stuff
             raise AttributeError
         if self._service_name is not None:
-            name = "%s.%s" % (self._service_name, name)
+            name = "{0}.{1}".format(self._service_name, name)
         return AuthServiceProxy(self.__service_url, name, connection=self.__conn)
 
     def _request(self, method, path, postdata):
@@ -129,7 +129,7 @@ class AuthServiceProxy(object):
     def __call__(self, *args):
         AuthServiceProxy.__id_count += 1
 
-        log.debug("-%s-> %s %s"%(AuthServiceProxy.__id_count, self._service_name,
+        log.debug("-%s-> {0} {1}".format(AuthServiceProxy.__id_count, self._service_name,
                                  json.dumps(args, default=EncodeDecimal)))
         postdata = json.dumps({'version': '1.1',
                                'method': self._service_name,
@@ -158,7 +158,8 @@ class AuthServiceProxy(object):
         responsedata = http_response.read().decode('utf8')
         response = json.loads(responsedata, parse_float=decimal.Decimal)
         if "error" in response and response["error"] is None:
-            log.debug("<-%s- %s"%(response["id"], json.dumps(response["result"], default=EncodeDecimal)))
+            log.debug("<-{0}- {1}".format(
+                response["id"], json.dumps(response["result"], default=EncodeDecimal)))
         else:
             log.debug("<-- "+responsedata)
         return response

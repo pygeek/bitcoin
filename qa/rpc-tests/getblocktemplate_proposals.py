@@ -27,10 +27,10 @@ def check_array_result(object_array, to_match, expected):
             continue
         for key,value in expected.items():
             if item[key] != value:
-                raise AssertionError("%s : expected %s=%s"%(str(item), str(key), str(value)))
+                raise AssertionError("{0} : expected {1}={2}".format(str(item), str(key), str(value)))
             num_matched = num_matched+1
     if num_matched == 0:
-        raise AssertionError("No objects matched %s"%(str(to_match)))
+        raise AssertionError("No objects matched {0}".format(str(to_match)))
 
 def b2x(b):
     return b2a_hex(b).decode('ascii')
@@ -85,7 +85,7 @@ def template_to_hex(tmpl, txlist):
 def assert_template(node, tmpl, txlist, expect):
     rsp = node.getblocktemplate({'data':template_to_hex(tmpl, txlist),'mode':'proposal'})
     if rsp != expect:
-        raise AssertionError('unexpected: %s' % (rsp,))
+        raise AssertionError('unexpected: {0}'.format(rsp,))
 
 class GetBlockTemplateProposalTest(BitcoinTestFramework):
     '''
@@ -101,7 +101,7 @@ class GetBlockTemplateProposalTest(BitcoinTestFramework):
             rawcoinbase += b'\x01-'
             hexcoinbase = b2x(rawcoinbase)
             hexoutval = b2x(pack('<Q', tmpl['coinbasevalue']))
-            tmpl['coinbasetxn'] = {'data': '01000000' + '01' + '0000000000000000000000000000000000000000000000000000000000000000ffffffff' + ('%02x' % (len(rawcoinbase),)) + hexcoinbase + 'fffffffe' + '01' + hexoutval + '00' + '00000000'}
+            tmpl['coinbasetxn'] = {'data': '01000000' + '01' + '0000000000000000000000000000000000000000000000000000000000000000ffffffff' + ('{0:02x}'.format(len(rawcoinbase),)) + hexcoinbase + 'fffffffe' + '01' + hexoutval + '00' + '00000000'}
         txlist = list(bytearray(a2b_hex(a['data'])) for a in (tmpl['coinbasetxn'],) + tuple(tmpl['transactions']))
 
         # Test 0: Capability advertised
@@ -161,7 +161,7 @@ class GetBlockTemplateProposalTest(BitcoinTestFramework):
         rawtmpl[4+32] = (rawtmpl[4+32] + 1) % 0x100
         rsp = node.getblocktemplate({'data':b2x(rawtmpl),'mode':'proposal'})
         if rsp != 'bad-txnmrklroot':
-            raise AssertionError('unexpected: %s' % (rsp,))
+            raise AssertionError('unexpected: {0}'.format(rsp,))
 
         # Test 10: Bad timestamps
         realtime = tmpl['curtime']
